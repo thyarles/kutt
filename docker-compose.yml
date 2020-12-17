@@ -6,12 +6,33 @@ services:
     depends_on:
       - postgres
       - redis
-    command: ["./wait-for-it.sh", "postgres:5432", "--", "npm", "start"]
+    command: ["./wait-for-it.sh", "postgres:5432", "--", "node", "production-server/server.js"]
     ports:
       - "3000:3000"
     env_file:
-      - .env
+      - .docker.env
     environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_NAME: kutt
+      DB_USER: userro
+      DB_PASSWORD: pass
+      REDIS_HOST: redis
+    volumes:
+    - ./compiler.js:/usr/src/app/node_modules/knex/lib/dialects/postgres/query/compiler.js
+
+  kuttrw:
+    image: kutt/kutt
+    depends_on:
+      - postgres
+      - redis
+    command: ["./wait-for-it.sh", "postgres:5432", "--", "node", "production-server/server.js"]
+    ports:
+      - "3001:3000"
+    env_file:
+      - .dockerrw.env
+    environment:
+      NODE_ENV: production
       DB_HOST: postgres
       DB_NAME: kutt
       DB_USER: user
